@@ -107,8 +107,6 @@ public class HelloApplication extends Application {
 
 
     public static void main(String[] args) {
-        URL url = HelloApplication.class.getResource("hello-view.fxml");
-        System.out.print(url);
-        //launch();
+        launch();
     }
 }
