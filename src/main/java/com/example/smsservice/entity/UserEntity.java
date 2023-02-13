@@ -11,8 +11,6 @@ public class UserEntity {
     private SocketChannel socketChannel;
     private String ip;
     private String time;
-    //判断是短信接收还是发送短信连接
-    private String type;
 
 
     public String getTime() {
@@ -58,11 +56,5 @@ public class UserEntity {
         this.ip = ip;
     }
 
-    public String getType() {
-        return type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 }

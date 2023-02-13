@@ -25,7 +25,6 @@ public class WinSocket extends Thread {
      * 值得注意的是 Buffer 及其子类都不是线程安全的。
      */
     private final ByteBuffer readBuffer = ByteBuffer.allocate(1024);//设置缓冲区大小
-
     private final NetworkStatus networkStatus;
     private final int port;
     private ServerSocketChannel serverSocket;
@@ -92,7 +91,6 @@ public class WinSocket extends Thread {
             try {
                 selector.close();
                 serverSocket.close();
-                channels.clear();
                 networkStatus.Break(0);
                 networkStatus.print("服务器关闭成功");
                 KillServer.killPort(new String[]{String.valueOf(port)});

@@ -10,6 +10,7 @@ module com.example.smsservice {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.alibaba.fastjson2;
+    requires java.sql;
 
 
     opens com.example.smsservice to javafx.fxml;

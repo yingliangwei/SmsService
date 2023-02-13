@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -90,21 +89,6 @@ public class HelloApplication extends Application {
             } while (true);
         }
     }
-
-
-    static class ColorCell extends ListCell<String> {
-        @Override
-        protected void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            Label label = new Label();
-            if (item != null) {
-                label.setText(item);
-                setGraphic(label);
-            }
-        }
-
-    }
-
 
     public static void main(String[] args) {
         launch();

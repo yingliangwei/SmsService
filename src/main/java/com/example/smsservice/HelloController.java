@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.smsservice.Interface.NetworkStatus;
 import com.example.smsservice.entity.ContentEntity;
 import com.example.smsservice.entity.UserEntity;
+import com.example.smsservice.handle.SmsHandle;
 import com.example.smsservice.service.WinSocket;
 import com.example.smsservice.storage.GlobalStorage;
 import com.example.smsservice.taskManager.Distribution;
@@ -11,10 +12,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class HelloController {
@@ -41,8 +39,6 @@ public class HelloController {
     public TableView<ContentEntity> tab_receive_content;
     public TableView<ContentEntity> tab_send_content;
     public TextArea log;
-    public TextField port1;
-    public Button Button_Server1;
     public Button button_start;
     private WinSocket winSocket;
 
@@ -64,7 +60,7 @@ public class HelloController {
 
         @Override
         public void Break(UserEntity userEntity) {
-            GlobalStorage.remove_user(tableView, userEntity);
+            //GlobalStorage.remove_user(tableView, userEntity);
         }
 
         @Override
@@ -83,111 +79,9 @@ public class HelloController {
         }
     };
 
-    //收短信通知
-    private final NetworkStatus networkStatus1 = new NetworkStatus() {
-        @Override
-        public void print(String text) {
-            ServerLog_Print(text);
-        }
-
-        @Override
-        public void handle(UserEntity userEntity, JSONObject jsonObject) {
-            if (userEntity == null) {
-                System.out.print("UserEntity null");
-                return;
-            }
-            HelloController.this.handle1(userEntity, jsonObject);
-        }
-
-        @Override
-        public void Break(UserEntity userEntity) {
-            GlobalStorage.remove_user(tableView, userEntity);
-        }
-
-        @Override
-        public void end(String text) {
-
-        }
-
-        @Override
-        public void connect(int size) {
-            setConnections(size);
-        }
-
-        @Override
-        public void Break(int size) {
-            setConnections(size);
-        }
-    };
-
-    //负责接收短信
-    private void handle1(UserEntity userEntity, JSONObject jsonObject) {
-        String type = jsonObject.getString("type");
-        if (type == null) {
-            return;
-        }
-        if (type.equals("login")) {
-            //记录设备手机号码
-            String phone = jsonObject.getString("phone");
-            GlobalStorage.remove_Phone(phone);
-            userEntity.setPhone(phone);
-            DateFormat currentTime = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");    //设置时间格式
-            userEntity.setTime(currentTime.format(new Date()));
-            userEntity.setType("接收");
-            GlobalStorage.add_User(tableView, userEntity);
-        } else if (type.equals("sms")) {
-            System.out.print(jsonObject + "\n");
-            JSONObject jsonObject1 = jsonObject.getJSONObject("context");
-            //设备上传的短信
-            String phone = jsonObject.getString("phone");//设备手机号码
-            String senderNumber = jsonObject1.getString("senderNumber");
-            String content = jsonObject1.getString("smsMessages");//内容
-            ContentEntity contentEntity;
-            contentEntity = new ContentEntity();
-            contentEntity.setPhone(phone);
-            contentEntity.setSend_phone(senderNumber);
-            contentEntity.setContent(content);
-            DateFormat currentTime = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");    //设置时间格式
-            contentEntity.setTime(currentTime.format(new Date()));
-            GlobalStorage.contentEntities.add(contentEntity);
-            tab_receive_content.setItems(GlobalStorage.contentEntities);
-        }
-    }
-
-    private WinSocket winSocket1;
-
-    //负责发送
+    //负责接收到数据处理
     void handle(UserEntity userEntity, JSONObject jsonObject) {
-        String type = jsonObject.getString("type");
-        if (type == null) {
-            return;
-        }
-        if (type.equals("login")) {
-            //记录设备手机号码
-            String phone = jsonObject.getString("phone");
-            GlobalStorage.remove_Phone(phone);
-            userEntity.setPhone(phone);
-            DateFormat currentTime = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");    //设置时间格式
-            userEntity.setTime(currentTime.format(new Date()));
-            userEntity.setType("发送");
-            GlobalStorage.add_User(tableView, userEntity);
-        }
-    }
-
-    /**
-     * @param phone      设备手机号码
-     * @param send_phone 目的号码
-     * @param context    内容
-     */
-    void sendMessage(String phone, String send_phone, String context) {
-        ContentEntity contentEntity = new ContentEntity();
-        contentEntity.setPhone(phone);
-        contentEntity.setSend_phone(send_phone);
-        contentEntity.setContent(context);
-        DateFormat currentTime = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");    //设置时间格式
-        contentEntity.setTime(currentTime.format(new Date()));
-        GlobalStorage.contentEntities1.add(contentEntity);
-        tab_send_content.setItems(GlobalStorage.contentEntities1);
+        SmsHandle.handle(tableView, tab_receive_content, userEntity, jsonObject);
     }
 
     void setConnections(int size) {
@@ -243,7 +137,6 @@ public class HelloController {
             winSocket.start();
             this.Button_Server.setText("关闭发送短信服务器");
         } else {
-            winSocket.close();
             winSocket = null;
             this.Button_Server.setText("开启发送短信服务器");
         }
@@ -291,24 +184,4 @@ public class HelloController {
         GlobalStorage.Numbers.clear();
     }
 
-
-    //开始收短信的服务器
-    public void StartServer1(ActionEvent actionEvent) {
-        if (this.port.getText().equals("")) {
-            ServerLog_Print("端口不能为空！");
-            return;
-        }
-        if (winSocket1 == null) {
-            int port = Integer.parseInt(this.port1.getText());
-            winSocket1 = new WinSocket(networkStatus1, port);
-        }
-        if (this.Button_Server1.getText().equals("开启收短信服务器")) {
-            winSocket1.start();
-            this.Button_Server1.setText("关闭收短信服务器");
-        } else {
-            winSocket1.close();
-            winSocket1 = null;
-            this.Button_Server1.setText("开启收短信服务器");
-        }
-    }
 }

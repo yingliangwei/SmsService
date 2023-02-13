@@ -21,6 +21,11 @@ public class GlobalStorage {
     //储存要发送的号码
     public static final List<String> Numbers = new ArrayList<>();
 
+    public static void addContentEntities(TableView<ContentEntity> contentEntityTableView, ContentEntity contentEntity) {
+        contentEntities.add(contentEntity);
+        contentEntityTableView.setItems(GlobalStorage.contentEntities);
+    }
+
     //提供ip获取他是连接设备
     public static UserEntity getIpUser(String ip) {
         for (UserEntity userEntity : userEntities) {
@@ -57,12 +62,8 @@ public class GlobalStorage {
     public static void add_User(TableView<UserEntity> tableView, UserEntity value) {
         for (UserEntity userEntity : userEntities) {
             if (userEntity.getPhone().equals(value.getPhone())) {
-                if (userEntity.getType().equals(value.getType())) {
-                    return;
-                } else {
-                    userEntities.add(value);
-                    tableView.setItems(GlobalStorage.userEntities);
-                }
+                userEntities.add(value);
+                tableView.setItems(GlobalStorage.userEntities);
             }
         }
         userEntities.add(value);
@@ -75,10 +76,8 @@ public class GlobalStorage {
         for (int i = 0; i < userEntities.size(); i++) {
             UserEntity userEntity = userEntities.get(i);
             if (userEntity.getPhone().equals(Entity.getPhone())) {
-                if (userEntity.getType().equals(Entity.getType())) {
-                    if (userEntity.getIp().equals(Entity.getIp())) {
-                        userEntities.remove(i);
-                    }
+                if (userEntity.getIp().equals(Entity.getIp())) {
+                    userEntities.remove(i);
                 }
             }
         }

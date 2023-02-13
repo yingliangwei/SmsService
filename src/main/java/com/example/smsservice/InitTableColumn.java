@@ -58,12 +58,6 @@ public class InitTableColumn {
             }
         });
 
-        //判断类型
-        TableColumn<UserEntity, String> checkbox_type = findViewById("tab_type");
-        PropertyValueFactory<UserEntity, String> type = new PropertyValueFactory<>("type");
-        checkbox_type.setCellValueFactory(type);
-        checkbox_type.setCellFactory(TextFieldTableCell.forTableColumn());
-
         TableColumn<UserEntity, String> checkboxCol_phone = findViewById("tab_phone");
         PropertyValueFactory<UserEntity, String> phone = new PropertyValueFactory<>("phone");
         checkboxCol_phone.setCellValueFactory(phone);
